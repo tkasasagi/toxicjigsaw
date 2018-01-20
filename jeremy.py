@@ -39,10 +39,14 @@ vec = TfidfVectorizer(ngram_range=(1,2), tokenizer=tokenize,
 trn_term_doc = vec.fit_transform(train[COMMENT])
 test_term_doc = vec.transform(test[COMMENT])
 """
+min_df = 3
+max_df = 0.9
+ngram_range = (1,2)
+
 
 n = train.shape[0]
-vec = TfidfVectorizer(ngram_range=(1,2), tokenizer=tokenize,
-               min_df=2, max_df=0.9, strip_accents='unicode', use_idf=1,
+vec = TfidfVectorizer(ngram_range, tokenizer=tokenize,
+               min_df, max_df, strip_accents='unicode', use_idf=1,
                smooth_idf=1, sublinear_tf=1 )
 trn_term_doc = vec.fit_transform(train[COMMENT])
 test_term_doc = vec.transform(test[COMMENT])
@@ -72,4 +76,4 @@ for i, j in enumerate(label_cols):
     
 submid = pd.DataFrame({'id': subm["id"]})
 submission = pd.concat([submid, pd.DataFrame(preds, columns = label_cols)], axis=1)
-submission.to_csv('submission.csv', index=False)    
+submission.to_csv('submission1.csv', index=False)    
