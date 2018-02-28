@@ -72,7 +72,8 @@ for class_name in class_names:
     print('CV score for class {} is {}'.format(class_name, cv_score))
 
     classifier.fit(train_features, train_target)
-    submission[class_name] = classifier.predict_proba(test_features)[:, 1]
+    submission[class_name] = classifier.predict(test_features)[:, 1]
+    print("Predict Done", class_name)
 
 print('Total CV score is {}'.format(np.mean(scores)))
 
