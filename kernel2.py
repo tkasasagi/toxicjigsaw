@@ -2,23 +2,18 @@ import numpy as np
 import pandas as pd
 
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 from scipy.sparse import hstack
 
 class_names = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
 
-train = pd.read_csv('input/train.csv').fillna(' ')
-test = pd.read_csv('input/test.csv').fillna(' ')
-
-test_id = test['id']
+train = pd.read_csv('input/train2.csv')
+test = pd.read_csv('input/test2.csv')
 
 train_text = train['comment_text']
 test_text = test['comment_text']
 all_text = pd.concat([train_text, test_text])
-
-print("Start word vectorizer")
 
 word_vectorizer = TfidfVectorizer(
     sublinear_tf=True,
@@ -27,15 +22,11 @@ word_vectorizer = TfidfVectorizer(
     token_pattern=r'\w{1,}',
     stop_words='english',
     ngram_range=(1, 1),
-    max_features=20000) 
-
-#max_feature=10000
-
+    max_features=50000)
+    #original max_features=10000
 word_vectorizer.fit(all_text)
 train_word_features = word_vectorizer.transform(train_text)
 test_word_features = word_vectorizer.transform(test_text)
-
-print("Start character vectorizer")
 
 char_vectorizer = TfidfVectorizer(
     sublinear_tf=True,
@@ -44,12 +35,7 @@ char_vectorizer = TfidfVectorizer(
     stop_words='english',
     ngram_range=(2, 6),
     max_features=50000)
-
-#max_feature=50000
 char_vectorizer.fit(all_text)
-
-print("Transform character and word vectorizer")
-
 train_char_features = char_vectorizer.transform(train_text)
 test_char_features = char_vectorizer.transform(test_text)
 
@@ -57,24 +43,42 @@ train_features = hstack([train_char_features, train_word_features])
 test_features = hstack([test_char_features, test_word_features])
 '''
 train_features = train_word_features
-test_features  = test_word_features
+test_features = test_word_features
 '''
-print(train_features.dtype)
+
 scores = []
+val_min = 0.01
+val_max = 0.9
 submission = pd.DataFrame.from_dict({'id': test['id']})
 for class_name in class_names:
     train_target = train[class_name]
-    #classifier = LogisticRegression(solver='sag')
-    classifier = RandomForestRegressor(max_depth=5, random_state=0)
+    classifier = LogisticRegression(solver='sag')
 
     cv_score = np.mean(cross_val_score(classifier, train_features, train_target, cv=3, scoring='roc_auc'))
     scores.append(cv_score)
     print('CV score for class {} is {}'.format(class_name, cv_score))
 
     classifier.fit(train_features, train_target)
-    submission[class_name] = classifier.predict(test_features)[:, 1]
-    print("Predict Done", class_name)
+    pred_score = classifier.predict_proba(test_features)[:, 1]
+    print(pred_score)
+    for i in range(len(pred_score)):
+        if pred_score[i] < val_min:
+            pred_score[i] = 0
+        elif pred_score[i] > val_max:
+            pred_score[i] = 1
+    
+    submission[class_name] = pred_score
 
 print('Total CV score is {}'.format(np.mean(scores)))
 
-submission.to_csv('submission.csv', index=False)
+
+submission.to_csv('sub.csv', index=False)
+
+
+
+
+
+
+
+
+
