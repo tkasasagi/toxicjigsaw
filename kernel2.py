@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-from scipy.sparse import hstack
+
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import make_union
 
@@ -47,41 +47,42 @@ vectorizer = make_union(word_vectorizer, char_vectorizer, n_jobs=2)
 vectorizer.fit(all_text)
 train_features = vectorizer.transform(train_text)
 test_features = vectorizer.transform(test_text)
+
+#----------------------------------------------------------------------
 '''
-char_vectorizer.fit(all_text)
-
-train_char_features = char_vectorizer.transform(train_text)
-test_char_features = char_vectorizer.transform(test_text)
-
-train_features = hstack([train_char_features, train_word_features])
-test_features = hstack([test_char_features, test_word_features])
-'''
-
-print('Shape of Sparse Matrix: ', train_word_features.shape)
-print('Amount of Non-Zero occurences: ', train_word_features.nnz)
-
-sparsity = (100.0 * train_word_features.nnz / (train_word_features.shape[0] * train_word_features.shape[1]))
-print('sparsity: {}'.format(round(sparsity)))
-
-
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import make_regression
+from sklearn.datasets import make_classification
+
+X, y = make_classification(n_samples=1000, n_features=4,
+                           n_informative=2, n_redundant=0,
+                           random_state=0, shuffle=False)
+clf = RandomForestClassifier(max_depth=2, random_state=0)
+clf.fit(X, y)
+'''
+#----------------------------------------------------------------------
+from sklearn.ensemble import RandomForestClassifier
+
 
 submission = pd.DataFrame.from_dict({'id': test['id']})
 
+print(train_features.dtype)
+scores = []
+submission = pd.DataFrame.from_dict({'id': test['id']})
 for class_name in class_names:
     train_target = train[class_name]
-    #train_features, train_target = make_regression(n_features=100000, n_informative=100000, random_state=0, shuffle=False)
 
-    detect_model = RandomForestClassifier(n_estimators = 100, max_depth=5, random_state=0).fit(train_features, train_target)
-    
-    pred_score = detect_model.predict(test_features)
-    submission[class_name] = pred_score
-    print('Done')
+    classifier = RandomForestClassifier(max_depth=5, random_state=0)
 
+    cv_score = np.mean(cross_val_score(classifier, train_features, train_target, cv=3, scoring='roc_auc'))
+    scores.append(cv_score)
+    print('CV score for class {} is {}'.format(class_name, cv_score))
 
+    classifier.fit(train_features, train_target)
+    submission[class_name] = classifier.predict_proba(test_features)[:, 1]
 
-submission.to_csv('sub.csv', index=False)
+print('Total CV score is {}'.format(np.mean(scores)))
+
+submission.to_csv('submission2.csv', index=False)
 
 
 
