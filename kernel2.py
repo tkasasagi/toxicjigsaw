@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
-
+from scipy.sparse import hstack
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
-from scipy.sparse import hstack
+from sklearn.pipeline import make_union
 
 class_names = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
 
@@ -28,6 +28,11 @@ word_vectorizer.fit(all_text)
 train_word_features = word_vectorizer.transform(train_text)
 test_word_features = word_vectorizer.transform(test_text)
 
+word_vectorizer.fit(all_text)
+train_word_features = word_vectorizer.transform(train_text)
+test_word_features = word_vectorizer.transform(test_text)
+
+
 char_vectorizer = TfidfVectorizer(
     sublinear_tf=True,
     strip_accents='unicode',
@@ -35,44 +40,51 @@ char_vectorizer = TfidfVectorizer(
     stop_words='english',
     ngram_range=(2, 6),
     max_features=50000)
+
+#max_feature=50000
+vectorizer = make_union(word_vectorizer, char_vectorizer, n_jobs=2)
+
+vectorizer.fit(all_text)
+train_features = vectorizer.transform(train_text)
+test_features = vectorizer.transform(test_text)
+'''
 char_vectorizer.fit(all_text)
+
 train_char_features = char_vectorizer.transform(train_text)
 test_char_features = char_vectorizer.transform(test_text)
 
 train_features = hstack([train_char_features, train_word_features])
 test_features = hstack([test_char_features, test_word_features])
 '''
-train_features = train_word_features
-test_features = test_word_features
-'''
 
-scores = []
-val_min = 0.01
-val_max = 0.9
+print('Shape of Sparse Matrix: ', train_word_features.shape)
+print('Amount of Non-Zero occurences: ', train_word_features.nnz)
+
+sparsity = (100.0 * train_word_features.nnz / (train_word_features.shape[0] * train_word_features.shape[1]))
+print('sparsity: {}'.format(round(sparsity)))
+
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_regression
+
 submission = pd.DataFrame.from_dict({'id': test['id']})
+
 for class_name in class_names:
     train_target = train[class_name]
-    classifier = LogisticRegression(solver='sag')
+    #train_features, train_target = make_regression(n_features=100000, n_informative=100000, random_state=0, shuffle=False)
 
-    cv_score = np.mean(cross_val_score(classifier, train_features, train_target, cv=3, scoring='roc_auc'))
-    scores.append(cv_score)
-    print('CV score for class {} is {}'.format(class_name, cv_score))
-
-    classifier.fit(train_features, train_target)
-    pred_score = classifier.predict_proba(test_features)[:, 1]
-    print(pred_score)
-    for i in range(len(pred_score)):
-        if pred_score[i] < val_min:
-            pred_score[i] = 0
-        elif pred_score[i] > val_max:
-            pred_score[i] = 1
+    detect_model = RandomForestClassifier(n_estimators = 100, max_depth=5, random_state=0).fit(train_features, train_target)
     
+    pred_score = detect_model.predict(test_features)
     submission[class_name] = pred_score
+    print('Done')
 
-print('Total CV score is {}'.format(np.mean(scores)))
 
 
 submission.to_csv('sub.csv', index=False)
+
+
+
 
 
 
