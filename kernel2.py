@@ -23,7 +23,7 @@ word_vectorizer = TfidfVectorizer(
     stop_words='english',
     ngram_range=(1, 1),
     max_features=50000)
-    #original max_features=10000
+    #original max_features=10000.
 word_vectorizer.fit(all_text)
 train_word_features = word_vectorizer.transform(train_text)
 test_word_features = word_vectorizer.transform(test_text)
