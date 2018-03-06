@@ -1,20 +1,4 @@
-﻿RF
-CV score for class toxic is 0.9318653687850796
-CV score for class severe_toxic is 0.8914207947358942
-CV score for class obscene is 0.9681081123990527
-CV score for class threat is 0.7677120750631321
-CV score for class insult is 0.9394813688684663
-CV score for class identity_hate is 0.8395538020975829
-
-Total CV score is 0.8896902536582013	0.9140
-
-CV score for class toxic is 0.9745565746686768
-CV score for class severe_toxic is 0.9876119857105424
-CV score for class obscene is 0.9897641491120592
-CV score for class threat is 0.9844325685043916
-CV score for class insult is 0.9799897546141544
-CV score for class identity_hate is 0.9817443136879301
-Total CV score is 0.9830165577162924
+﻿
 
 CV score for class toxic is 0.9752001597685033
 CV score for class severe_toxic is 0.9877793631091322
@@ -24,23 +8,7 @@ CV score for class insult is 0.9805344619069323
 CV score for class identity_hate is 0.9819155251065208
 Total CV score is 0.9833191380511931     0.9785
 
-RF
-CV score for class toxic is 0.804468306794312
-CV score for class severe_toxic is 0.9194354034555182
-CV score for class obscene is 0.8806556955699244
-CV score for class threat is 0.7264240563062933
-CV score for class insult is 0.8471382117421814
-CV score for class identity_hate is 0.7730013826277982
-Total CV score is 0.8251871760826713
 
-RF2
-CV score for class toxic is 0.9489096812416867
-CV score for class severe_toxic is 0.9712584695843463
-CV score for class obscene is 0.983661980725698
-CV score for class threat is 0.8494545529459115
-CV score for class insult is 0.9650832386247065
-CV score for class identity_hate is 0.9267121259930841
-Total CV score is 0.9408466748525721	0.9584
 
 Ensemble1	0.9846
 

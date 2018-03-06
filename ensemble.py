@@ -8,10 +8,10 @@
 import numpy as np
 import pandas as pd
 
-gru = pd.read_csv('gru.csv') # PL score 0.9829
-lstm_nb_svm = pd.read_csv('lstm.csv') # 0.9811
-lr = pd.read_csv('logis.csv') # 0.9788
-lgb = pd.read_csv('newsub2.csv') # 0.9785
+gru = pd.read_csv('sub/gru.csv') # PL score 0.9829
+lstm_nb_svm = pd.read_csv('sub/lstm.csv') # 0.9811
+lr = pd.read_csv('sub/hight_of_blend_v2.csv') # 0.9788
+lgb = pd.read_csv('sub/newsub2.csv') # 0.9785
 
 
 # Bojan suggests scaling with min-max to make sure that all the submissions have
@@ -44,5 +44,5 @@ submission['obscene'] = lgb['obscene'] * 0.15 + gru['obscene'] * 0.4 + lr['obsce
 submission['threat'] = lgb['threat'] * 0.15 + gru['threat'] * 0.4 + lr['threat'] * 0.15 + lstm_nb_svm['threat'] * 0.3
 submission['insult'] = lgb['insult'] * 0.15 + gru['insult'] * 0.4 + lr['insult'] * 0.15 + lstm_nb_svm['insult'] * 0.3
 submission['identity_hate'] = lgb['identity_hate'] * 0.15 + gru['identity_hate'] * 0.4 + lr['identity_hate'] * 0.15 + lstm_nb_svm['identity_hate'] * 0.3
-submission.to_csv('ensemble1.csv', index=False)
+submission.to_csv('ensemble.csv', index=False)
 

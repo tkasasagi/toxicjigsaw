@@ -3,7 +3,7 @@ import pandas as pd
 from scipy.sparse import hstack
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
-import string
+
 from sklearn.model_selection import cross_val_score
 
 
@@ -13,13 +13,14 @@ train = pd.read_csv('input/train2.csv')
 test = pd.read_csv('input/test2.csv')
 
 import re
-re_tok = re.compile(f'([{string.punctuation}“”¨«»®´·º½¾¿¡§£₤‘’])')
+#re_tok = re.compile(f'([{string.punctuation}“”¨«»®´·º½¾¿¡§£₤‘’])')
 #def tokenize(s): return re_tok.sub(r' \1 ', s).split()
 
 def cleantext(text):
     text = re.sub(r'[^\w\s]','',text)
     result = ''.join([i for i in text if not i.isdigit()])
-    return re_tok.sub(r' \1 ', result)
+    #return re_tok.sub(r' \1 ', result)
+    return result
     
 newtrain = []
 newtest  = []
@@ -41,7 +42,7 @@ word_vectorizer = TfidfVectorizer(
     sublinear_tf=True,
     strip_accents='unicode',
     analyzer='word',
-    min_df=1, max_df=0.8, #1, 0.6
+    min_df=2, max_df=0.8, #1, 0.8
     use_idf=1, smooth_idf=1,
     token_pattern=r'\w{1,}',
     stop_words='english',
@@ -58,10 +59,10 @@ char_vectorizer = TfidfVectorizer(
     sublinear_tf=True,
     strip_accents='unicode',
     analyzer='char',
-    min_df=1, max_df=0.8,
+    min_df=2, max_df=0.8,
     use_idf=1, smooth_idf=1, 
     stop_words='english',
-    ngram_range=(2, 6),
+    ngram_range=(2, 7),
     lowercase = False,
     max_features=100000)
 
