@@ -11,6 +11,13 @@ class_names = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity
 train = pd.read_csv('input/train2.csv')
 test = pd.read_csv('input/test2.csv')
 
+
+train['comment_text'][0]
+add = ''.join(train['comment_text'][0])
+
+print(add)
+add = add.split('\', \'')
+
 train_text = train['comment_text']
 test_text = test['comment_text']
 all_text = pd.concat([train_text, test_text])
@@ -71,7 +78,7 @@ submission = pd.DataFrame.from_dict({'id': test['id']})
 for class_name in class_names:
     train_target = train[class_name]
 
-    classifier = RandomForestClassifier(max_depth=5, random_state=0)
+    classifier = RandomForestClassifier( max_depth=3, random_state=0)
 
     cv_score = np.mean(cross_val_score(classifier, train_features, train_target, cv=3, scoring='roc_auc'))
     scores.append(cv_score)
