@@ -19,6 +19,6 @@ CV score for class obscene is 0.9899066428414095
 CV score for class threat is 0.9844029944097015
 CV score for class insult is 0.980695350794802
 CV score for class identity_hate is 0.9818903477048112
-Total CV score is 0.9833349735632863
+Total CV score is 0.9833349735632863	0.9785
 
 

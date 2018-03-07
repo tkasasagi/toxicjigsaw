@@ -2,8 +2,8 @@
 import pandas as pd
 from sklearn.preprocessing import minmax_scale
 sup = pd.read_csv('sub/hight_of_blend_v2.csv')
-allave = pd.read_csv('sub/submit_cnn_avg_3_folds.csv')
-gru = pd.read_csv('sub/submission-tuned-LR-01.csv')
+allave = pd.read_csv('sub/newsub2.csv')
+gru = pd.read_csv('sub/lstm.csv')
 
 blend = allave.copy()
 col = blend.columns
